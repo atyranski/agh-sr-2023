@@ -1,0 +1,5 @@
+rootProject.name = 'zad-1'
+include 'server'
+include 'client'
+include 'common'
+

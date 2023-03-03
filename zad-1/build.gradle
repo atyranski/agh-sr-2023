@@ -1,0 +1,53 @@
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+}
+
+subprojects {
+    group = 'edu.agh.atyranski'
+    version = '0.0.1'
+}
+
+configure(subprojects.findAll {it.name != 'common'}) {
+    apply plugin: 'application'
+    apply plugin: 'java'
+
+    sourceCompatibility = '17'
+
+    configurations {
+        compileOnly {
+            extendsFrom annotationProcessor
+        }
+    }
+
+    run {
+        standardInput = System.in
+    }
+
+    dependencies {
+        implementation 'org.projectlombok:lombok:1.18.26'
+        implementation 'org.slf4j:slf4j-log4j12:2.0.6'
+        implementation 'org.slf4j:slf4j-api:2.0.6'
+
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+
+        implementation project(':common')
+        testImplementation project(':common')
+    }
+
+    tasks.named('test') {
+        useJUnitPlatform()
+    }
+
+    jar {
+        manifest {
+            attributes 'Main-Class': application.mainClass
+        }
+
+        from {
+            configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+        }
+    }
+}
