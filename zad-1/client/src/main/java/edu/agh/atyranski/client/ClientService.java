@@ -15,23 +15,30 @@ public class ClientService {
     private final static Logger log = LoggerFactory.getLogger(ClientService.class.getSimpleName());
 
     private final ClientConfig config;
-
     private boolean running = true;
 
     public ClientService(ClientConfig config) {
         this.config = config;
     }
 
-    private void registerNickname(DataInputStream input, DataOutputStream output)
+    private void registerNickname(DataOutputStream output)
             throws IOException {
         log.debug("sending request to register nickname");
 
         output.writeUTF(Action.LOG_IN.label);
         output.writeUTF(config.getNickname());
 
-        Response response = Response.of(input.readUTF());
-
         log.debug("successfully logged into server with nickname: {}", config.getNickname());
+    }
+
+    private void sendMessage(DataOutputStream output, String message)
+            throws IOException {
+        log.debug("sending request with message");
+
+        output.writeUTF(Action.MESSAGE_SEND.label);
+        output.writeUTF(message);
+
+        log.debug("successfully send message to server");
     }
 
     public void start() {
@@ -41,15 +48,26 @@ public class ClientService {
              DataOutputStream output = new DataOutputStream(socket.getOutputStream())) {
 
             log.debug("connected to server: {}:{}\n", socket.getInetAddress(), socket.getPort());
-            registerNickname(input, output);
+            registerNickname(output);
+
+            ClientListenerThread clientListenerThread = new ClientListenerThread(input, log);
+            clientListenerThread.start();
 
             while (running) {
                 System.out.print("> ");
                 String message = scanner.nextLine();
-                running = false;
+
+                sendMessage(output, message);
             }
+
+            clientListenerThread.shutdown();
+            clientListenerThread.join();
+
         } catch (IOException e) {
             log.warn("occurred problem while creating the socket", e);
+
+        } catch (InterruptedException e) {
+            log.warn("occurred problem while stopping listener thread", e);
         }
     }
 

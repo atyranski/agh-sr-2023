@@ -16,6 +16,7 @@ public class ClientSession extends Thread {
 
     private final ServerService serverService;
     private final Socket socket;
+    private String nickname;
     private boolean running = true;
 
     public ClientSession(ServerService serverService, Socket socket) {
@@ -23,34 +24,60 @@ public class ClientSession extends Thread {
         this.socket = socket;
     }
 
-    private void registerClientNickname(DataInputStream input, DataOutputStream output)
-            throws IOException {
+    public String getNickname() {
+        return nickname;
+    }
 
+    private void registerClientNickname(DataInputStream input)
+            throws IOException {
         Action action = Action.of(input.readUTF());
         String nickname = input.readUTF();
 
         log.debug("processing new nickname registration request for: {} {}", action.label, nickname);
 
-        boolean result = serverService.addNewClient(socket.getPort(), nickname);
+        boolean result = serverService.addNewClient(nickname, this);
 
         if (result) {
-            output.writeUTF(Response.OK.label);
+            this.nickname = nickname;
             log.debug("nickname {} correctly registered", nickname);
         } else {
-            output.writeUTF(Response.NICKNAME_TAKEN.label);
             log.debug("nickname registration refused");
+        }
+    }
+
+    private void receiveMessage(DataInputStream input)
+            throws IOException {
+        Action action = Action.of(input.readUTF());
+        String message = input.readUTF();
+
+        log.debug("received a {} action from {}", action.label, nickname);
+
+        serverService.forwardMessage(nickname, message);
+
+        log.debug("forwarded message from {}", nickname);
+    }
+
+    public void forwardMessage(String nickname, String message) {
+        try (DataOutputStream output = new DataOutputStream(socket.getOutputStream())) {
+            log.debug("forwarding message from {} to {}", nickname, this.nickname);
+
+            output.writeUTF(Action.MESSAGE_FORWARD.label);
+            output.writeUTF(nickname);
+            output.writeUTF(message);
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
     @Override
     public void run() {
-        try (DataInputStream input = new DataInputStream(socket.getInputStream());
-             DataOutputStream output = new DataOutputStream(socket.getOutputStream())) {
+        try (DataInputStream input = new DataInputStream(socket.getInputStream())) {
 
-            registerClientNickname(input, output);
+            registerClientNickname(input);
 
             while (running) {
-                running = false;
+                receiveMessage(input);
             }
 
         } catch (IOException e) {

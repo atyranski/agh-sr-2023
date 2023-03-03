@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 public class ServerService {
@@ -16,8 +14,8 @@ public class ServerService {
     private final static Logger log = LoggerFactory.getLogger(ServerService.class.getSimpleName());
 
     private final ServerConfig config;
-    private final Map<String, Integer> nicknamePortMap = new HashMap<>();
-    final private List<ClientSession> clientSessionList = new LinkedList<>();
+    private final Map<String, ClientSession> nicknameSessionMap = new HashMap<>();
+//    final private List<ClientSession> clientSessionList = new LinkedList<>();
 
     private boolean running = true;
 
@@ -37,7 +35,6 @@ public class ServerService {
 
                 ClientSession clientSession = new ClientSession(this, clientSocket);
                 clientSession.start();
-                clientSessionList.add(clientSession);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -45,7 +42,7 @@ public class ServerService {
     }
 
     public void close() {
-        for (ClientSession clientSession: clientSessionList) {
+        for (ClientSession clientSession: nicknameSessionMap.values()) {
             try {
                 clientSession.join();
             } catch (InterruptedException e) {
@@ -54,13 +51,21 @@ public class ServerService {
         }
     }
 
-    public boolean addNewClient(int port, String nickname) {
-        if (nicknamePortMap.containsKey(nickname)) {
+    public boolean addNewClient(String nickname, ClientSession socket) {
+        if (nicknameSessionMap.containsKey(nickname)) {
             log.warn("client tried to login with nickname which already exists");
             return false;
         }
 
-        nicknamePortMap.put(nickname, port);
+        nicknameSessionMap.put(nickname, socket);
         return true;
+    }
+
+    public void forwardMessage(String nickname, String message) {
+        for (ClientSession clientSession: nicknameSessionMap.values()) {
+            if (!clientSession.getNickname().equals(nickname)) {
+                clientSession.forwardMessage(nickname, message);
+            }
+        }
     }
 }

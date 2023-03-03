@@ -7,6 +7,8 @@ public enum Action {
 
     LOG_IN ("login"),
     LOG_OUT ("logout"),
+    MESSAGE_SEND ("message-send"),
+    MESSAGE_FORWARD ("message-forward"),
     INVALID ("invalid");
 
     private static final Map<String, Action> BY_LABEL = new HashMap<>();
