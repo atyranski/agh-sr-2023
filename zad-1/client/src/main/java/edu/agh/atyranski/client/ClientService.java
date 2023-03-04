@@ -1,7 +1,5 @@
 package edu.agh.atyranski.client;
 
-import edu.agh.atyranski.util.Action;
-import edu.agh.atyranski.util.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,73 +8,111 @@ import java.net.Socket;
 import java.util.Scanner;
 
 public class ClientService {
+    private static final String ANSI_RESET = "\u001B[0m";
+    private static final String ANSI_GREEN = "\u001B[32m";
+    private static final String ANSI_YELLOW = "\u001B[33m";
     private final static Logger log = LoggerFactory.getLogger(ClientService.class.getSimpleName());
 
     private ClientConfig config;
     private Socket socket;
-    private BufferedReader bufferedReader;
-    private BufferedWriter bufferedWriter;
-    private String nickname;
+    private BufferedReader reader;
+    private BufferedWriter writer;
 
-    public ClientService(ClientConfig config, String nickname) {
+    public ClientService(ClientConfig config) {
         try {
             this.config = config;
-            this.nickname = nickname;
             this.socket = new Socket(config.getAddress(), config.getPort());
-            this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-            this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            this.writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            this.reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            sendMessage(config.getNickname());
             log.debug("client instantiated successfully");
+
         } catch (IOException e) {
-            closeConnection(socket, bufferedWriter, bufferedReader);
+            log.warn("client occurred problem while creating socket and out/input streams", e);
+            closeConnection();
         }
     }
 
-    public void sendMessage() {
-        try {
-            bufferedWriter.write(nickname);
-            bufferedWriter.newLine();
-            bufferedWriter.flush();
+    private void sendMessage(String message)
+            throws IOException {
 
-            Scanner scanner = new Scanner(System.in);
+        writer.write(message);
+        writer.newLine();
+        writer.flush();
+    }
 
+    public void start() {
+        listenForMessages();
+        launchMessagesSender();
+    }
+
+    public void launchMessagesSender() {
+        try (Scanner scanner = new Scanner(System.in)) {
             while (socket.isConnected()) {
-                System.out.print("> ");
-                String message = scanner.nextLine();
+                String message = String.format("%s:%s", config.getNickname(), scanner.nextLine());
 
-                bufferedWriter.write(nickname + ": " + message);
-                bufferedWriter.newLine();
-                bufferedWriter.flush();
+                sendMessage(message);
             }
 
         } catch (IOException e) {
-            closeConnection(socket, bufferedWriter, bufferedReader);
+            log.warn("occurred problem while sending a message", e);
+            closeConnection();
         }
     }
 
     public void listenForMessages() {
         new Thread(() -> {
-            String messageFromServer;
+            String messageReceived;
+            String author;
+            String message;
 
             while (socket.isConnected()) {
                 try {
-                    messageFromServer = bufferedReader.readLine();
-                    System.out.println(messageFromServer);
+                    messageReceived = reader.readLine();
+
+                    author = messageReceived.substring(0, messageReceived.indexOf(":"));
+                    message = messageReceived.substring(messageReceived.indexOf(":") + 1);
+
+                    switch (author) {
+                        case "logged-in" -> printLoginInfo(message);
+                        case "logged-out" -> printLogoutInfo(message);
+                        default -> printMessage(author, message);
+                    }
 
                 } catch (IOException e) {
-                    closeConnection(socket, bufferedWriter, bufferedReader);
+                    log.warn("occurred problem while listening for a message from server", e);
+                    closeConnection();
                 }
             }
         }).start();
     }
+    private void printMessage(String author, String message) {
+        System.out.printf("%s[%-12s]:%s %s\n", ANSI_GREEN, author, ANSI_RESET, message);
+    }
 
-    private void closeConnection(Socket socket, BufferedWriter bufferedWriter, BufferedReader bufferedReader) {
+    private void printLoginInfo(String nickname) {
+        System.out.printf("%s[%-12s]:%s %s has entered the chat\n",
+                ANSI_YELLOW, "Server", ANSI_RESET, nickname);
+    }
+
+    private void printLogoutInfo(String nickname) {
+        System.out.printf("%s[%-12s]:%s %s left the chat\n",
+                ANSI_YELLOW, "Server", ANSI_RESET, nickname);
+    }
+
+    public void close() {
+        closeConnection();
+        log.debug("client closed");
+    }
+
+    private void closeConnection() {
         try {
-            if (bufferedWriter != null) {
-                bufferedWriter.close();
+            if (writer != null) {
+                writer.close();
             }
 
-            if (bufferedReader != null) {
-                bufferedReader.close();
+            if (reader != null) {
+                reader.close();
             }
 
             if (socket != null) {
@@ -84,70 +120,7 @@ public class ClientService {
             }
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            log.warn("occurred problem while closing socket and/or out/input streams", e);
         }
     }
-
-    public void start() {
-        listenForMessages();
-        sendMessage();
-    }
-
-    public void close() {
-        closeConnection(socket, bufferedWriter, bufferedReader);
-    }
-
-
-//    private void registerNickname(DataOutputStream output)
-//            throws IOException {
-//        log.debug("sending request to register nickname");
-//
-//        output.writeUTF(Action.LOG_IN.label);
-//        output.writeUTF(config.getNickname());
-//
-//        log.debug("successfully logged into server with nickname: {}", config.getNickname());
-//    }
-//
-//    private void sendMessage(DataOutputStream output, String message)
-//            throws IOException {
-//        log.debug("sending request with message");
-//
-//        output.writeUTF(Action.MESSAGE_SEND.label);
-//        output.writeUTF(message);
-//
-//        log.debug("successfully send message to server");
-//    }
-//
-//    public void start() {
-//        try (Socket socket = new Socket(config.getAddress(), config.getPort());
-//             Scanner scanner = new Scanner(System.in);
-//             DataInputStream input = new DataInputStream(socket.getInputStream());
-//             DataOutputStream output = new DataOutputStream(socket.getOutputStream())) {
-//
-//            log.debug("connected to server: {}:{}\n", socket.getInetAddress(), socket.getPort());
-//            registerNickname(output);
-//
-//            ClientListenerThread clientListenerThread = new ClientListenerThread(input, log);
-//            clientListenerThread.start();
-//
-//            while (running) {
-//                System.out.print("> ");
-//                String message = scanner.nextLine();
-//
-//                sendMessage(output, message);
-//            }
-//
-//            clientListenerThread.shutdown();
-//            clientListenerThread.join();
-//
-//        } catch (IOException e) {
-//            log.warn("occurred problem while creating the socket", e);
-//
-//        } catch (InterruptedException e) {
-//            log.warn("occurred problem while stopping listener thread", e);
-//        }
-//    }
-//
-//    public void close() {
-//    }
 }
