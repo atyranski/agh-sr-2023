@@ -6,34 +6,31 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.Map;
 
 public class ServerService {
 
     private final static Logger log = LoggerFactory.getLogger(ServerService.class.getSimpleName());
 
     private final ServerConfig config;
-    private final Map<String, ClientSession> nicknameSessionMap = new HashMap<>();
-//    final private List<ClientSession> clientSessionList = new LinkedList<>();
+    private final ServerSocket serverSocket;
 
-    private boolean running = true;
+    public ServerService(ServerConfig config)
+            throws IOException {
 
-
-    public ServerService(ServerConfig config) {
         this.config = config;
+        this.serverSocket = new ServerSocket(config.getPort(), config.getBacklog(), config.getAddress());
     }
 
     public void start() {
-        try (ServerSocket socket = new ServerSocket(config.getPort(), config.getBacklog(), config.getAddress())) {
+        try {
             log.info("is running");
 
-            while (running) {
-                Socket clientSocket = socket.accept();
+            while (!serverSocket.isClosed()) {
+                Socket clientSocket = serverSocket.accept();
 
                 log.debug("new client connected: {}:{}\n", clientSocket.getInetAddress(), clientSocket.getPort());
 
-                ClientSession clientSession = new ClientSession(this, clientSocket);
+                ClientSession clientSession = new ClientSession(clientSocket);
                 clientSession.start();
             }
         } catch (IOException e) {
@@ -42,30 +39,37 @@ public class ServerService {
     }
 
     public void close() {
-        for (ClientSession clientSession: nicknameSessionMap.values()) {
-            try {
-                clientSession.join();
-            } catch (InterruptedException e) {
-                log.warn("occurred problem when closing client session {}", "someName", e); // TODO
+        try {
+            if (serverSocket != null) {
+                serverSocket.close();
             }
+        } catch (IOException e) {
+            log.warn("occurred problem while closing server socket", e);
         }
+//        for (ClientSession clientSession: nicknameSessionMap.values()) {
+//            try {
+//                clientSession.join();
+//            } catch (InterruptedException e) {
+//                log.warn("occurred problem when closing client session {}", "someName", e); // TODO
+//            }
+//        }
     }
 
-    public boolean addNewClient(String nickname, ClientSession socket) {
-        if (nicknameSessionMap.containsKey(nickname)) {
-            log.warn("client tried to login with nickname which already exists");
-            return false;
-        }
+//    public boolean addNewClient(String nickname, ClientSession socket) {
+//        if (nicknameSessionMap.containsKey(nickname)) {
+//            log.warn("client tried to login with nickname which already exists");
+//            return false;
+//        }
+//
+//        nicknameSessionMap.put(nickname, socket);
+//        return true;
+//    }
 
-        nicknameSessionMap.put(nickname, socket);
-        return true;
-    }
-
-    public void forwardMessage(String nickname, String message) {
-        for (ClientSession clientSession: nicknameSessionMap.values()) {
-            if (!clientSession.getNickname().equals(nickname)) {
-                clientSession.forwardMessage(nickname, message);
-            }
-        }
-    }
+//    public void forwardMessage(String nickname, String message) {
+//        for (ClientSession clientSession: nicknameSessionMap.values()) {
+//            if (!clientSession.getNickname().equals(nickname)) {
+//                clientSession.forwardMessage(nickname, message);
+//            }
+//        }
+//    }
 }
