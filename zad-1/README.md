@@ -1,6 +1,6 @@
 # Zadanie domowe 1
 
-### Opis:
+## Opis:
 * Napisać aplikację typu chat (5 pkt.)
   * Klienci łączą się serwerem przez protokół TCP
   * Serwer przyjmuje wiadomości od każdego klienta i rozsyła je do pozostałych (wraz z id/nickiem klienta)
@@ -13,8 +13,48 @@
   * Nie zamiast, tylko jako alternatywna opcja do wyboru (komenda ‘M’)
   * Multicast przesyła bezpośrednio do wszystkich przez adres grupowy (serwer może, ale nie musi odbierać)
 
-### Uwagi:
+## Uwagi:
 * Zadanie można oddać w dowolnym języku programowania
 * Nie wolno korzystać z frameworków do komunikacji sieciowej – tylko gniazda! Nie wolno też korzystać z Akka
 * Wydajność rozwiązania (np. pula wątków)
 * Poprawność rozwiązania (np. unikanie wysyłania wiadomości do nadawcy, obsługa wątków)
+
+
+## Setup
+
+Aby zbudować projekt należy wywołać komendy (najłatwiej z poziomu InteliiJ puścić dwa taski z paska z boku)
+```
+  gradle clean build
+```
+
+Otworzyć terminal i przejść do odpowiednich folderów (ofc można sobie przekopiować zbudowane jar'y gdzie indziej)
+* `server/build/libs` - lokalizacja jar'a z programem serwera
+* `client/build/libs` - lokalizacja jar'a z programem client'a
+
+### Serwer
+Aby uruchomić serwer potrzebne będą trzy parametry:
+* `address` - adres, na którym będzie działał nasz serwer (domyślnie `localhost`)
+* `port` - port, na którym będzie działał nasz serwer (domyślnie `3000`)
+* `backlog` - maksymalna liczba oczekujących połączeń na gnieździe
+
+Parametry te ustawiamy w momencie uruchomienia programu poprzez przekazanie je jako parametry wywołania.
+Przykład:
+```
+java -jar .\server-0.0.1.jar --address 127.0.0.1 --port 3000 --backlog 20
+```
+
+Parametry można przekazywać w dowolnej kolejności.
+
+### Serwer
+Aby uruchomić clienta potrzebne będą trzy parametry:
+* `nickname` - nazwa, pod jaką ten użytkownik będzie widziany przez serwer i innych użytkowników (<b>wymagane</b>)
+* `address` - adres serwera, do którego chcemy się podłączyć (domyślnie `localhost`)
+* `port` - port, na którym pracuje nasz serwer (domyślnie `3000`)
+
+Parametry te ustawiamy w momencie uruchomienia programu poprzez przekazanie je jako parametry wywołania.
+Przykład:
+```
+java -jar .\client-0.0.1.jar --nickname client-1 --address 127.0.0.1 --port 3000
+```
+
+Parametry można przekazywać w dowolnej kolejności.

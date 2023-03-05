@@ -1,6 +1,9 @@
 package edu.agh.atyranski.server;
 
+import edu.agh.atyranski.model.MessageType;
+
 import java.io.*;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -9,19 +12,53 @@ import java.util.List;
 public class ClientSession extends Thread {
 
     public static List<ClientSession> clients = new ArrayList<>();
-    private Socket socket;
+    private Socket tcpSocket;
     private BufferedReader reader;
     private BufferedWriter writer;
     private String nickname;
 
-    public ClientSession(Socket socket) {
+    public ClientSession(Socket tcpSocket) {
         try {
-            this.socket = socket;
-            this.writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8));
-            this.reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
-            this.nickname = reader.readLine();
+            this.tcpSocket = tcpSocket;
+            this.writer = new BufferedWriter(new OutputStreamWriter(tcpSocket.getOutputStream(), StandardCharsets.UTF_8));
+            this.reader = new BufferedReader(new InputStreamReader(tcpSocket.getInputStream(), StandardCharsets.UTF_8));
+            this.nickname = getAuthor(reader.readLine());
             clients.add(this);
             broadcastMessage("logged-in", nickname);
+
+        } catch (IOException e) {
+            closeClient();
+        }
+    }
+
+    private String getAuthor(String message) {
+        return message.substring(0, message.indexOf("/"));
+    }
+
+    public void removeClientHandler() {
+        clients.remove(this);
+        broadcastMessage("logged-out", nickname);
+    }
+
+    public void broadcastMessage(String author, String content) {
+        String messageToSend = createMessage(author, MessageType.TCP, content);
+
+        for (ClientSession client: clients) {
+            if (!client.getNickname().equals(nickname)) {
+                client.forwardMessage(messageToSend);
+            }
+        }
+    }
+
+    private String createMessage(String author, MessageType type, String content) {
+        return String.format("%s/%s:%s", author, type.value, content);
+    }
+
+    private void forwardMessage(String message) {
+        try {
+            writer.write(message);
+            writer.newLine();
+            writer.flush();
 
         } catch (IOException e) {
             closeClient();
@@ -40,43 +77,13 @@ public class ClientSession extends Thread {
                 reader.close();
             }
 
-            if (socket != null) {
-                socket.close();
+            if (tcpSocket != null) {
+                tcpSocket.close();
             }
 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public void removeClientHandler() {
-        clients.remove(this);
-        broadcastMessage("logged-out", nickname);
-    }
-
-    public void broadcastMessage(String author, String message) {
-        String messageToSend = String.format("%s:%s", author, message);
-
-        for (ClientSession client: clients) {
-            if (!client.getNickname().equals(nickname)) {
-                client.forwardMessage(messageToSend);
-            }
-        }
-    }
-
-    private void forwardMessage(String message) {
-        try {
-            writer.write(message);
-            writer.newLine();
-            writer.flush();
-
-        } catch (IOException e) {
-            closeClient();
-        }
-    }
-
-    public String getNickname() {
-        return nickname;
     }
 
     @Override
@@ -85,10 +92,10 @@ public class ClientSession extends Thread {
         String author;
         String message;
 
-        while (!socket.isClosed()) {
+        while (!tcpSocket.isClosed()) {
             try {
                 messageReceived = reader.readLine();
-                author = messageReceived.substring(0, messageReceived.indexOf(":"));
+                author = messageReceived.substring(0, messageReceived.indexOf("/"));
                 message = messageReceived.substring(messageReceived.indexOf(":") + 1);
 
                 broadcastMessage(author, message);
@@ -98,5 +105,17 @@ public class ClientSession extends Thread {
                 break;
             }
         }
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public InetAddress getAddres() {
+        return tcpSocket.getInetAddress();
+    }
+
+    public int getPort() {
+        return tcpSocket.getPort();
     }
 }

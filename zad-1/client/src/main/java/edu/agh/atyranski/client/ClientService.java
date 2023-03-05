@@ -1,10 +1,16 @@
 package edu.agh.atyranski.client;
 
+import edu.agh.atyranski.model.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.Socket;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class ClientService {
@@ -14,18 +20,22 @@ public class ClientService {
     private final static Logger log = LoggerFactory.getLogger(ClientService.class.getSimpleName());
 
     private ClientConfig config;
-    private Socket socket;
+    private Socket tcpSocket;
+    private DatagramSocket udpSocket;
     private BufferedReader reader;
     private BufferedWriter writer;
 
     public ClientService(ClientConfig config) {
         try {
             this.config = config;
-            this.socket = new Socket(config.getAddress(), config.getPort());
-            this.writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-            this.reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            sendMessage(config.getNickname());
+            this.tcpSocket = new Socket(config.getAddress(), config.getPort());
+            this.udpSocket = new DatagramSocket(tcpSocket.getLocalPort(), config.getAddress());
+            this.writer = new BufferedWriter(new OutputStreamWriter(tcpSocket.getOutputStream()));
+            this.reader = new BufferedReader(new InputStreamReader(tcpSocket.getInputStream()));
+            registerOnServer();
             log.debug("client instantiated successfully");
+            log.debug("tcp-socket [{}:{}] running", tcpSocket.getInetAddress().toString(), tcpSocket.getLocalPort());
+            log.debug("udp-socket [{}:{}] running", config.getAddress(), udpSocket.getLocalPort());
 
         } catch (IOException e) {
             log.warn("client occurred problem while creating socket and out/input streams", e);
@@ -33,7 +43,14 @@ public class ClientService {
         }
     }
 
-    private void sendMessage(String message)
+    private void registerOnServer()
+            throws IOException {
+
+        String message = createMessage(config.getNickname(), MessageType.TCP, config.getNickname());
+        sendTcpMessage(message);
+    }
+
+    private void sendTcpMessage(String message)
             throws IOException {
 
         writer.write(message);
@@ -41,17 +58,38 @@ public class ClientService {
         writer.flush();
     }
 
+    private void sendUdpMessage(String message)
+            throws IOException {
+
+        byte[] sendBuffer = message.getBytes();
+        DatagramPacket udpDatagram = new DatagramPacket(
+                sendBuffer, sendBuffer.length, config.getAddress(), config.getPort());
+
+        udpSocket.send(udpDatagram);
+    }
+
     public void start() {
-        listenForMessages();
+        listenForTcpMessages();
+        listenForUdpMessages();
         launchMessagesSender();
+    }
+
+    private String createMessage(String author, MessageType type, String content) {
+        return String.format("%s/%s:%s", author, type.value, content);
     }
 
     public void launchMessagesSender() {
         try (Scanner scanner = new Scanner(System.in)) {
-            while (socket.isConnected()) {
-                String message = String.format("%s:%s", config.getNickname(), scanner.nextLine());
+            while (tcpSocket.isConnected()) {
+                String userInput = scanner.nextLine();
 
-                sendMessage(message);
+                MessageType type = getMode(userInput);
+                String message = createMessage(config.getNickname(), type, getMessage(userInput));
+
+                switch (type) {
+                    case UDP -> sendUdpMessage(message);
+                    default -> sendTcpMessage(message);
+                }
             }
 
         } catch (IOException e) {
@@ -60,34 +98,95 @@ public class ClientService {
         }
     }
 
-    public void listenForMessages() {
-        new Thread(() -> {
-            String messageReceived;
-            String author;
-            String message;
+    private MessageType getMode(String userInput) {
+        try {
+            String messageTypeExtracted = userInput.substring(1, userInput.indexOf(">"));
+            return MessageType.of(messageTypeExtracted);
+        } catch (StringIndexOutOfBoundsException e) {
+            return MessageType.TCP;
+        }
+    }
 
-            while (socket.isConnected()) {
+    private String getMessage(String userInput) {
+        return userInput.substring(userInput.indexOf(">") + 1);
+    }
+
+    public void listenForTcpMessages() {
+        new Thread(() -> {
+            log.debug("TCP message listener running");
+
+            String messageReceived;
+
+            while (tcpSocket.isConnected()) {
                 try {
                     messageReceived = reader.readLine();
 
-                    author = messageReceived.substring(0, messageReceived.indexOf(":"));
-                    message = messageReceived.substring(messageReceived.indexOf(":") + 1);
+                    Map<String, String> message = parseReceivedMessage(messageReceived);
 
-                    switch (author) {
-                        case "logged-in" -> printLoginInfo(message);
-                        case "logged-out" -> printLogoutInfo(message);
-                        default -> printMessage(author, message);
+                    switch (message.get("author")) {
+                        case "logged-in" -> printLoginInfo(message.get("message"));
+                        case "logged-out" -> printLogoutInfo(message.get("message"));
+                        default -> printMessage(
+                                message.get("author"),
+                                message.get("type"),
+                                message.get("message"));
                     }
 
                 } catch (IOException e) {
-                    log.warn("occurred problem while listening for a message from server", e);
+                    log.warn("occurred problem while listening for a TCP message from server", e);
                     closeConnection();
                 }
             }
+            log.debug("TCP message listener stopped");
+
         }).start();
     }
-    private void printMessage(String author, String message) {
-        System.out.printf("%s[%-12s]:%s %s\n", ANSI_GREEN, author, ANSI_RESET, message);
+
+    public void listenForUdpMessages() {
+        new Thread(() -> {
+            log.debug("UDP message listener running");
+            byte[] receiveBuffer = new byte[1024];
+
+            while (!udpSocket.isClosed()) {
+                try {
+                    Arrays.fill(receiveBuffer, (byte) 0);
+                    DatagramPacket receiveDatagram = new DatagramPacket(receiveBuffer, receiveBuffer.length);
+                    udpSocket.receive(receiveDatagram);
+
+                    String message = new String(receiveDatagram.getData()).trim();
+                    printMessage(message);
+
+                } catch (IOException e) {
+                    log.warn("occurred problem while listening for a UDP message from server", e);
+                    closeConnection();
+                }
+            }
+
+            log.debug("UDP message listener stopped");
+        }).start();
+    }
+
+    private Map<String, String> parseReceivedMessage(String message) {
+        Map<String, String> parsedMessage = new HashMap<>();
+
+        parsedMessage.put("author", message.substring(0, message.indexOf("/")));
+        parsedMessage.put("type", message.substring(message.indexOf("/") + 1, message.indexOf(":")));
+        parsedMessage.put("message", message.substring(message.indexOf(":") + 1));
+
+        return parsedMessage;
+    }
+
+    private void printMessage(String messageReceived) {
+        Map<String, String> parsedMessage = parseReceivedMessage(messageReceived);
+
+        printMessage(
+                parsedMessage.get("author"),
+                parsedMessage.get("type"),
+                parsedMessage.get("message"));
+    }
+
+    private void printMessage(String author, String messageType, String message) {
+        System.out.printf("%s[%-12s | %s]:%s %s\n", ANSI_GREEN, author, messageType, ANSI_RESET, message);
     }
 
     private void printLoginInfo(String nickname) {
@@ -115,8 +214,8 @@ public class ClientService {
                 reader.close();
             }
 
-            if (socket != null) {
-                socket.close();
+            if (tcpSocket != null) {
+                tcpSocket.close();
             }
 
         } catch (IOException e) {
