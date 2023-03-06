@@ -96,3 +96,16 @@ Example:
 3    [Thread-1] DEBUG ClientService  - UDP message listener running 
 <udp>Sample text UDP - prefix
 ```
+
+### ASCII Art
+To send an Atari logo as a ASCII art to have to send message made of prefix `<ascii-art>`
+Example:
+```
+0    [main] DEBUG ClientService  - client instantiated successfully
+2    [main] DEBUG ClientService  - tcp-socket [/127.0.0.1:63797] running
+3    [main] DEBUG ClientService  - udp-socket [/127.0.0.1:63797] running
+4    [Thread-0] DEBUG ClientService  - TCP message listener running     
+6    [Thread-1] DEBUG ClientService  - UDP message listener running     
+6    [Thread-2] DEBUG ClientService  - ASCII art listener running       
+<ascii-art>
+```
