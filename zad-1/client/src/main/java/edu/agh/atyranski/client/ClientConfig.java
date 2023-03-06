@@ -42,7 +42,7 @@ public class ClientConfig {
         }
 
         if (properties.get("multicast-port") == null) {
-            this.multicastPort = 4000;
+            this.multicastPort = 4446;
         } else {
             this.multicastPort = Integer.parseInt((String) properties.get("multicast-port"));
         }

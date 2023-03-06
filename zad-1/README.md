@@ -50,6 +50,8 @@ To run client app you need 3 parameters:
 * `nickname` - name of the username displayed on server and in other client's(<b>required</b>)
 * `address` - address for the server (default `localhost`)
 * `port` - port of the server (default `3000`)
+* `multicast-address` - address of multicast group (default `230.0.0.0`)
+* `multicast-port` - port of multicast group (default `4446`)
 
 Parameters should be passed as a command line parameters.
 Example:
