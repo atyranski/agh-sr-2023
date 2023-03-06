@@ -19,8 +19,7 @@
 * Wydajność rozwiązania (np. pula wątków)
 * Poprawność rozwiązania (np. unikanie wysyłania wiadomości do nadawcy, obsługa wątków)
 
-
-## Setup
+## Uruchomienie
 
 Aby zbudować projekt należy wywołać komendy (najłatwiej z poziomu InteliiJ puścić dwa taski z paska z boku)
 ```
@@ -45,7 +44,7 @@ java -jar .\server-0.0.1.jar --address 127.0.0.1 --port 3000 --backlog 20
 
 Parametry można przekazywać w dowolnej kolejności.
 
-### Serwer
+### Klient
 Aby uruchomić clienta potrzebne będą trzy parametry:
 * `nickname` - nazwa, pod jaką ten użytkownik będzie widziany przez serwer i innych użytkowników (<b>wymagane</b>)
 * `address` - adres serwera, do którego chcemy się podłączyć (domyślnie `localhost`)
@@ -58,3 +57,41 @@ java -jar .\client-0.0.1.jar --nickname client-1 --address 127.0.0.1 --port 3000
 ```
 
 Parametry można przekazywać w dowolnej kolejności.
+
+## Wysyłanie wiadomości
+Z aplikacji klienta można wysyłać wiadomości na dwa sposoby - poprzez TCP oraz UDP.
+
+### TCP
+Aby wysłać wiadomość poprzez TCP można zastosować prefix `<tcp>`.
+Przykład:
+```
+0    [main] DEBUG ClientService  - client instantiated successfully
+1    [main] DEBUG ClientService  - tcp-socket [/127.0.0.1:56510] running
+1    [main] DEBUG ClientService  - udp-socket [/127.0.0.1:56510] running
+3    [Thread-0] DEBUG ClientService  - TCP message listener running     
+3    [Thread-1] DEBUG ClientService  - UDP message listener running 
+<tcp>Wiadomość testowa TCP - prefix
+```
+
+Jako iż w tej aplikacji przesył poprzez protokół TCP jest domyślny, to można też wysyłać wiadomości bez tego prefixu.
+Przykład:
+```
+0    [main] DEBUG ClientService  - client instantiated successfully
+1    [main] DEBUG ClientService  - tcp-socket [/127.0.0.1:56510] running
+1    [main] DEBUG ClientService  - udp-socket [/127.0.0.1:56510] running
+3    [Thread-0] DEBUG ClientService  - TCP message listener running     
+3    [Thread-1] DEBUG ClientService  - UDP message listener running 
+Wiadomość testowa TCP - bez prefixu
+```
+
+### UDP
+Aby wysłać wiadomość poprzez UDP należy zastosować prefix `<udp>`.
+Przykład:
+```
+0    [main] DEBUG ClientService  - client instantiated successfully
+1    [main] DEBUG ClientService  - tcp-socket [/127.0.0.1:56510] running
+1    [main] DEBUG ClientService  - udp-socket [/127.0.0.1:56510] running
+3    [Thread-0] DEBUG ClientService  - TCP message listener running     
+3    [Thread-1] DEBUG ClientService  - UDP message listener running 
+<udp>Wiadomość testowa UDP - prefix
+```
