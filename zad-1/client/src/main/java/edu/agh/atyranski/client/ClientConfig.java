@@ -11,6 +11,8 @@ public class ClientConfig {
     final private InetAddress address;
     final private int port;
     final private String nickname;
+    final private InetAddress multicastAddress;
+    final private int multicastPort;
 
     private ClientConfig(Properties properties)
             throws UnknownHostException {
@@ -31,6 +33,18 @@ public class ClientConfig {
             this.port = 3000;
         } else {
             this.port = Integer.parseInt((String) properties.get("port"));
+        }
+
+        if (properties.get("multicast-address") == null) {
+            this.multicastAddress = InetAddress.getByName("230.0.0.0");
+        } else {
+            this.multicastAddress = InetAddress.getByName((String) properties.get("multicast-address"));
+        }
+
+        if (properties.get("multicast-port") == null) {
+            this.multicastPort = 4000;
+        } else {
+            this.multicastPort = Integer.parseInt((String) properties.get("multicast-port"));
         }
     }
 
@@ -65,5 +79,11 @@ public class ClientConfig {
         return nickname;
     }
 
+    public InetAddress getMulticastAddress() {
+        return multicastAddress;
+    }
 
+    public int getMulticastPort() {
+        return multicastPort;
+    }
 }

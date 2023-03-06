@@ -6,6 +6,7 @@ import java.util.Map;
 public enum MessageType {
     UDP ("udp"),
     TCP ("tcp"),
+    ASCII_ART ("ascii-art"),
     INVALID ("");
 
     private static final Map<String, MessageType> BY_LABEL = new HashMap<>();

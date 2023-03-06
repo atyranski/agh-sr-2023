@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.MulticastSocket;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -14,14 +15,35 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class ClientService {
+
     private static final String ANSI_RESET = "\u001B[0m";
     private static final String ANSI_GREEN = "\u001B[32m";
     private static final String ANSI_YELLOW = "\u001B[33m";
     private final static Logger log = LoggerFactory.getLogger(ClientService.class.getSimpleName());
 
+    private final static String ASCII_ART_MESSAGE_CONTENT =
+       """
+                      $$ $$$$$ $$
+                      $$ $$$$$ $$
+                     .$$ $$$$$ $$.
+                     :$$ $$$$$ $$:
+                     $$$ $$$$$ $$$
+                     $$$ $$$$$ $$$
+                    ,$$$ $$$$$ $$$.
+                   ,$$$$ $$$$$ $$$$.
+                  ,$$$$; $$$$$ :$$$$.
+                 ,$$$$$  $$$$$  $$$$$.
+               ,$$$$$$'  $$$$$  `$$$$$$.
+             ,$$$$$$$'   $$$$$   `$$$$$$$.
+          ,s$$$$$$$'     $$$$$     `$$$$$$$s.
+        $$$$$$$$$'       $$$$$       `$$$$$$$$$
+        $$$$$Y'          $$$$$          `Y$$$$$
+        """;
+
     private ClientConfig config;
     private Socket tcpSocket;
     private DatagramSocket udpSocket;
+    private MulticastSocket multicastSocket;
     private BufferedReader reader;
     private BufferedWriter writer;
 
@@ -30,12 +52,15 @@ public class ClientService {
             this.config = config;
             this.tcpSocket = new Socket(config.getAddress(), config.getPort());
             this.udpSocket = new DatagramSocket(tcpSocket.getLocalPort(), config.getAddress());
+            this.multicastSocket = new MulticastSocket(config.getMulticastPort());
+            multicastSocket.joinGroup(config.getMulticastAddress());
             this.writer = new BufferedWriter(new OutputStreamWriter(tcpSocket.getOutputStream()));
             this.reader = new BufferedReader(new InputStreamReader(tcpSocket.getInputStream()));
             registerOnServer();
             log.debug("client instantiated successfully");
             log.debug("tcp-socket [{}:{}] running", tcpSocket.getInetAddress().toString(), tcpSocket.getLocalPort());
             log.debug("udp-socket [{}:{}] running", config.getAddress(), udpSocket.getLocalPort());
+            log.debug("multicast-socket [{}:{}] running", multicastSocket.getInetAddress(), multicastSocket.getPort());
 
         } catch (IOException e) {
             log.warn("client occurred problem while creating socket and out/input streams", e);
@@ -68,9 +93,21 @@ public class ClientService {
         udpSocket.send(udpDatagram);
     }
 
+    private void sendAsciiArt()
+            throws IOException {
+
+        String message = createMessage(config.getNickname(), MessageType.ASCII_ART, ASCII_ART_MESSAGE_CONTENT);
+        byte[] sendBuffer = message.getBytes();
+
+        DatagramPacket udpDatagram = new DatagramPacket(
+                sendBuffer, sendBuffer.length, config.getMulticastAddress(), config.getMulticastPort());
+        multicastSocket.send(udpDatagram);
+    }
+
     public void start() {
         listenForTcpMessages();
         listenForUdpMessages();
+        listenForAsciiArts();
         launchMessagesSender();
     }
 
@@ -88,6 +125,7 @@ public class ClientService {
 
                 switch (type) {
                     case UDP -> sendUdpMessage(message);
+                    case ASCII_ART -> sendAsciiArt();
                     default -> sendTcpMessage(message);
                 }
             }
@@ -163,6 +201,35 @@ public class ClientService {
             }
 
             log.debug("UDP message listener stopped");
+        }).start();
+    }
+
+    public void listenForAsciiArts() {
+        new Thread(() -> {
+            log.debug("ASCII art listener running");
+            byte[] receiveBuffer = new byte[1024];
+
+            while(!multicastSocket.isClosed()) {
+                try {
+                    Arrays.fill(receiveBuffer, (byte) 0);
+                    DatagramPacket receiveDatagram = new DatagramPacket(receiveBuffer, receiveBuffer.length);
+                    multicastSocket.receive(receiveDatagram);
+
+                    String message = new String(receiveDatagram.getData()).trim();
+                    Map<String, String> parsedMessage = parseReceivedMessage(message);
+
+                    if (!parsedMessage.get("author").equals(config.getNickname())) {
+                        printMessage(
+                                parsedMessage.get("author"),
+                                parsedMessage.get("type"),
+                                "\n" + parsedMessage.get("message"));
+                    }
+
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
         }).start();
     }
 
