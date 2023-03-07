@@ -56,7 +56,7 @@ To run client app you need 3 parameters:
 Parameters should be passed as a command line parameters.
 Example:
 ```
-java -jar .\client-0.0.1.jar --nickname client-1 --address 127.0.0.1 --port 3000
+java -jar .\client-0.0.1.jar --nickname client-1 --address 127.0.0.1 --port 3000 --multicast-address 230.0.0.0 --multicast-port 4446
 ```
 
 Order of parameters doesn't matter.
@@ -73,7 +73,7 @@ Example:
 1    [main] DEBUG ClientService  - udp-socket [/127.0.0.1:56510] running
 3    [Thread-0] DEBUG ClientService  - TCP message listener running     
 3    [Thread-1] DEBUG ClientService  - UDP message listener running 
-<tcp>Wiadomość testowa TCP - prefix
+<tcp>Sample text TCP - prefix
 ```
 
 In this app, sending a message by TCP is a default option, so you don't have to specify the prefix
@@ -84,7 +84,7 @@ Example:
 1    [main] DEBUG ClientService  - udp-socket [/127.0.0.1:56510] running
 3    [Thread-0] DEBUG ClientService  - TCP message listener running     
 3    [Thread-1] DEBUG ClientService  - UDP message listener running 
-Wiadomość testowa TCP - bez prefixu
+Sample text TCP - no prefix
 ```
 
 ### UDP
