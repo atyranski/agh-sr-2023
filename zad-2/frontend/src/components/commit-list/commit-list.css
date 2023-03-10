@@ -1,0 +1,12 @@
+.commit-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding-top: 2rem;
+    box-sizing: border-box;
+    max-height: 90vh;
+    width: 100%;
+    overflow-y: auto;
+    gap: 1rem;
+}
