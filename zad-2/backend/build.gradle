@@ -22,6 +22,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'io.projectreactor:reactor-core:3.5.2'
     implementation 'org.springframework:spring-webflux:6.0.4'
+    implementation 'org.asynchttpclient:async-http-client:2.2.0'
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'

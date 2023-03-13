@@ -1,0 +1,29 @@
+.file {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+    padding: .25rem 0;
+}
+
+.file h5 {
+    margin: 0;
+    font-weight: 400;
+}
+
+.file .stats {
+    margin: 0;
+}
+
+.file .stats .additions {
+    color: #195312;
+}
+
+.file .stats .changes {
+    color: #926b23;
+}
+
+.file .stats .deletions {
+    color: #682219;
+}

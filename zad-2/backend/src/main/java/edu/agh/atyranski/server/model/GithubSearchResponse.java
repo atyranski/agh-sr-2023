@@ -1,11 +1,9 @@
 package edu.agh.atyranski.server.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.ZonedDateTime;
-import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GithubSearchResponse {
@@ -40,12 +38,8 @@ public class GithubSearchResponse {
 
         private Commit commit;
 
-        private Author author;
-
         private Repository repository;
-
-        @JsonIgnore
-        private List<Language> languages;
+        private CommitContent commitContent;
 
         public String getUrl() {
             return url;
@@ -59,16 +53,12 @@ public class GithubSearchResponse {
             return commit;
         }
 
-        public Author getAuthor() {
-            return author;
-        }
-
         public Repository getRepository() {
             return repository;
         }
 
-        public List<Language> getLanguages() {
-            return languages;
+        public CommitContent getCommitContent() {
+            return commitContent;
         }
 
         public Item setUrl(String url) {
@@ -86,18 +76,13 @@ public class GithubSearchResponse {
             return this;
         }
 
-        public Item setAuthor(Author author) {
-            this.author = author;
-            return this;
-        }
-
         public Item setRepository(Repository repository) {
             this.repository = repository;
             return this;
         }
 
-        public Item setLanguages(List<Language> languages) {
-            this.languages = languages;
+        public Item setCommitContent(CommitContent commitContent) {
+            this.commitContent = commitContent;
             return this;
         }
     }
@@ -129,28 +114,25 @@ public class GithubSearchResponse {
 
     public static class CommitAuthor {
 
+        private String name;
+
         private ZonedDateTime date;
+
+        public String getName() {
+            return name;
+        }
 
         public ZonedDateTime getDate() {
             return date;
         }
 
-        public CommitAuthor setDate(ZonedDateTime date) {
-            this.date = date;
+        public CommitAuthor setName(String name) {
+            this.name = name;
             return this;
         }
-    }
 
-    public static class Author {
-
-        private String login;
-
-        public String getLogin() {
-            return login;
-        }
-
-        public Author setLogin(String login) {
-            this.login = login;
+        public CommitAuthor setDate(ZonedDateTime date) {
+            this.date = date;
             return this;
         }
     }
@@ -160,24 +142,12 @@ public class GithubSearchResponse {
         @JsonProperty("full_name")
         private String fullName;
 
-        @JsonProperty("languages_url")
-        private String languagesUrl;
-
         public String getFullName() {
             return fullName;
         }
 
-        public String getLanguagesUrl() {
-            return languagesUrl;
-        }
-
         public Repository setFullName(String fullName) {
             this.fullName = fullName;
-            return this;
-        }
-
-        public Repository setLanguagesUrl(String languagesUrl) {
-            this.languagesUrl = languagesUrl;
             return this;
         }
     }

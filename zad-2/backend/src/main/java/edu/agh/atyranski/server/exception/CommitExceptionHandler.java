@@ -11,8 +11,18 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class CommitExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(value = {})
+    @ExceptionHandler(value = {IllegalArgumentException.class})
     protected ResponseEntity<Object> handlerBadRequest(final RuntimeException ex, final WebRequest request) {
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+    }
+
+    @ExceptionHandler(value = {UnknownFileStatus.class})
+    protected ResponseEntity<Object> handlerFailedDependency(final RuntimeException ex, final WebRequest request) {
+        return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.FAILED_DEPENDENCY, request);
+    }
+
+    @ExceptionHandler(value = {Exception.class})
+    protected ResponseEntity<Object> handlerInternalServerError(final RuntimeException ex, final WebRequest request) {
+        return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
     }
 }

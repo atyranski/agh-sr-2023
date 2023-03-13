@@ -5,182 +5,71 @@ import CommitList from './components/commit-list/commit-list';
 import React from 'react';
 
 export default function App() {
-  const [items, setItems] = useState([
-    {
-      author: "atyranski",
-      creationDate: "2022-03-03",
-      language: [
-        {
-          language: "java",
-          amount: 11234,
-        }, 
-        {
-          language: "javascript",
-          amount: 11234,
-        }, 
-        {
-          language: "c",
-          amount: 11234,
-        }, 
-        {
-          language: "c++",
-          amount: 11234,
-        }, 
-        {
-          language: "python",
-          amount: 5121
-        }
-      ],
-      sha: "5706dded215f0651850b024539439ea0b29a0bd9",
-      url: "https://api.github.com/repos/atyranski/agh-sr-2023/commits/5706dded215f0651850b024539439ea0b29a0bd9",
-      message: "possible to send one message one way",
-      repositoryFullName: "atyranski/agh-sr-2023"
-    },
-    {
-      author: "atyranski",
-      creationDate: "2022-03-03",
-      language: [
-        {
-          language: "java",
-          amount: 11234,
-        }, 
-        {
-          language: "python",
-          amount: 5121
-        }
-      ],
-      sha: "5706dded215f0651850b024539439ea0b29a0bd9",
-      url: "https://api.github.com/repos/atyranski/agh-sr-2023/commits/5706dded215f0651850b024539439ea0b29a0bd9",
-      message: "possible to send one message one way",
-      repositoryFullName: "atyranski/agh-sr-2023"
-    },
-    {
-      author: "atyranski",
-      creationDate: "2022-03-03",
-      language: [
-        {
-          language: "java",
-          amount: 11234,
-        }, 
-        {
-          language: "python",
-          amount: 5121
-        }
-      ],
-      sha: "5706dded215f0651850b024539439ea0b29a0bd9",
-      url: "https://api.github.com/repos/atyranski/agh-sr-2023/commits/5706dded215f0651850b024539439ea0b29a0bd9",
-      message: "possible to send one message one way",
-      repositoryFullName: "atyranski/agh-sr-2023"
-    },
-    {
-      author: "atyranski",
-      creationDate: "2022-03-03",
-      language: [
-        {
-          language: "java",
-          amount: 11234,
-        }, 
-        {
-          language: "python",
-          amount: 5121
-        }
-      ],
-      sha: "5706dded215f0651850b024539439ea0b29a0bd9",
-      url: "https://api.github.com/repos/atyranski/agh-sr-2023/commits/5706dded215f0651850b024539439ea0b29a0bd9",
-      message: "possible to send one message one way",
-      repositoryFullName: "atyranski/agh-sr-2023"
-    },
-    {
-      author: "atyranski",
-      creationDate: "2022-03-03",
-      language: [
-        {
-          language: "java",
-          amount: 11234,
-        }, 
-        {
-          language: "python",
-          amount: 5121
-        }
-      ],
-      sha: "5706dded215f0651850b024539439ea0b29a0bd9",
-      url: "https://api.github.com/repos/atyranski/agh-sr-2023/commits/5706dded215f0651850b024539439ea0b29a0bd9",
-      message: "possible to send one message one way",
-      repositoryFullName: "atyranski/agh-sr-2023"
-    },
-    {
-      author: "atyranski",
-      creationDate: "2022-03-03",
-      language: [
-        {
-          language: "java",
-          amount: 11234,
-        }, 
-        {
-          language: "python",
-          amount: 5121
-        }
-      ],
-      sha: "5706dded215f0651850b024539439ea0b29a0bd9",
-      url: "https://api.github.com/repos/atyranski/agh-sr-2023/commits/5706dded215f0651850b024539439ea0b29a0bd9",
-      message: "possible to send one message one way",
-      repositoryFullName: "atyranski/agh-sr-2023"
-    },
-    {
-      author: "atyranski",
-      creationDate: "2022-03-03",
-      language: [
-        {
-          language: "java",
-          amount: 11234,
-        }, 
-        {
-          language: "python",
-          amount: 5121
-        }
-      ],
-      sha: "5706dded215f0651850b024539439ea0b29a0bd9",
-      url: "https://api.github.com/repos/atyranski/agh-sr-2023/commits/5706dded215f0651850b024539439ea0b29a0bd9",
-      message: "possible to send one message one way",
-      repositoryFullName: "atyranski/agh-sr-2023"
-    },
-    {
-      author: "atyranski",
-      creationDate: "2022-03-03",
-      language: [
-        {
-          language: "java",
-          amount: 11234,
-        }, 
-        {
-          language: "python",
-          amount: 5121
-        }
-      ],
-      sha: "5706dded215f0651850b024539439ea0b29a0bd9",
-      url: "https://api.github.com/repos/atyranski/agh-sr-2023/commits/5706dded215f0651850b024539439ea0b29a0bd9",
-      message: "possible to send one message one way",
-      repositoryFullName: "atyranski/agh-sr-2023"
-    },
-    {
-      author: "atyranski",
-      creationDate: "2022-03-03",
-      language: [
-        {
-          language: "java",
-          amount: 11234,
-        }, 
-        {
-          language: "python",
-          amount: 5121
-        }
-      ],
-      sha: "5706dded215f0651850b024539439ea0b29a0bd9",
-      url: "https://api.github.com/repos/atyranski/agh-sr-2023/commits/5706dded215f0651850b024539439ea0b29a0bd9",
-      message: "possible to send one message one way",
-      repositoryFullName: "atyranski/agh-sr-2023"
-    },
-  ]);
+  const [items, setItems] = useState([])
+  // const [items, setItems] = useState([
+  //   {
+  //     "author": "Arkadiusz Tyrański",
+  //     "creationDate": "2023-02-01T18:22:22",
+  //     "sha": "4ab763f16d1e0f9eceecd804b5b9a669aa7c3290",
+  //     "url": "https://api.github.com/repos/atyranski/agh-iot-2022/commits/4ab763f16d1e0f9eceecd804b5b9a669aa7c3290",
+  //     "message": "Update README.md",
+  //     "repositoryFullName": "atyranski/agh-iot-2022",
+  //     "stats": {
+  //       "total": 1,
+  //       "added": 1,
+  //       "removed": 0,
+  //       "modified": 1,
+  //       "renamed": 2,
+  //       "copied": 3,
+  //       "changed": 1,
+  //       "unchanged": 0
+  //     },
+  //     "files": [
+  //         {
+  //             "filename": "README.md",
+  //             "status": "modified",
+  //             "additions": 1,
+  //             "deletions": 0,
+  //             "changes": 1
+  //         },
+  //         {
+  //           "filename": "README.md",
+  //           "status": "modified",
+  //           "additions": 1,
+  //           "deletions": 0,
+  //           "changes": 1
+  //         },
+  //         {
+  //           "filename": "README.md",
+  //           "status": "modified",
+  //           "additions": 1,
+  //           "deletions": 0,
+  //           "changes": 1
+  //         },
+  //         {
+  //           "filename": "README.md",
+  //           "status": "modified",
+  //           "additions": 1,
+  //           "deletions": 0,
+  //           "changes": 1
+  //         },
+  //         {
+  //           "filename": "README.md",
+  //           "status": "modified",
+  //           "additions": 1,
+  //           "deletions": 0,
+  //           "changes": 1
+  //         },
+  //         {
+  //           "filename": "README.md",
+  //           "status": "modified",
+  //           "additions": 1,
+  //           "deletions": 0,
+  //           "changes": 1
+  //         }
+  //     ]
+  // }
+  // ]);
 
   return (
     <div className="App">

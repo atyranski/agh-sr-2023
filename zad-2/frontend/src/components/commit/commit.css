@@ -1,8 +1,8 @@
 .commit {
     display: flex;
     flex-direction: column;
-    width: 20vw;
-    height: 40vh;
+    width: 21.5vw;
+    height: 50vh;
     font-size: 1rem;
 
     background-color: #25282b;
@@ -26,13 +26,10 @@
     width: 100%;
 }
 
-.commit .sub-title a {
+.commit .sub-title strong {
     color: #61dafb;
     transition: .15s ease-in;
     text-decoration: none;
-}
-.commit .sub-title a:hover {
-    color: #4cacc7;
 }
 
 .commit h4 {
@@ -45,18 +42,10 @@
     color: #399fbb;
 }
 
-.languages-list {
-    margin-top: .5rem;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: .25rem;
-}
-
-.languages-list .language {
-    background: #144270;
-    border-radius: 1rem;
-    font-size: .9rem;
-    padding: .25rem .75rem;
-    font-weight: 500;
+.file-list {
+    background-color: #16171baa;
+    border-radius: .5rem;
+    padding: .25rem;
+    height: 7rem;
+    overflow-y: auto;
 }

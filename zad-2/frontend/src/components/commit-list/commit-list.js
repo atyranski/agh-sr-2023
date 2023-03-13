@@ -5,8 +5,8 @@ import './commit-list.css';
 export default function CommitList({items}) {
     return (
         <div className='commit-list'>
-            {items && items.length > 0 && items.map((itemObject, index) => (
-                <Commit key={index} item={itemObject} />
+            {items && items.length > 0 && items.map((itemObject) => (
+                <Commit key={itemObject.sha} item={itemObject} />
               ))}
         </div>
     );
