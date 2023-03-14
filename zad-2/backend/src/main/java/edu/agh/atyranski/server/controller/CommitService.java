@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -75,9 +76,9 @@ public class CommitService {
                     "github access token should be added to headers as 'Authorization':GITHUB_ACCESS_TOKEN");
         }
 
-        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-        final LocalDateTime dateTimeFrom = LocalDateTime.parse(dateFrom, formatter);
-        final LocalDateTime dateTimeTo = LocalDateTime.parse(dateTo, formatter);
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        final LocalDate dateTimeFrom = LocalDate.parse(dateFrom, formatter);
+        final LocalDate dateTimeTo = LocalDate.parse(dateTo, formatter);
 
         if (dateTimeTo.isBefore(dateTimeFrom)) {
             throw new IllegalArgumentException("dateTo mustn't be earlier than dateFrom");
