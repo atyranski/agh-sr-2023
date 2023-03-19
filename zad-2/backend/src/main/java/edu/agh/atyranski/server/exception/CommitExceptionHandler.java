@@ -13,18 +13,18 @@ import java.time.format.DateTimeParseException;
 @ControllerAdvice
 public class CommitExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(value = {IllegalArgumentException.class, DateTimeParseException.class})
+    @ExceptionHandler(value = { IllegalArgumentException.class, DateTimeParseException.class })
     protected ResponseEntity<Object> handlerBadRequest(final RuntimeException ex, final WebRequest request) {
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
-    @ExceptionHandler(value = {UnknownFileStatus.class})
+    @ExceptionHandler(value = { UnknownFileStatus.class })
     protected ResponseEntity<Object> handlerFailedDependency(final RuntimeException ex, final WebRequest request) {
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.FAILED_DEPENDENCY, request);
     }
 
-    @ExceptionHandler(value = {Exception.class})
+    @ExceptionHandler(value = { Exception.class })
     protected ResponseEntity<Object> handlerInternalServerError(final RuntimeException ex, final WebRequest request) {
-        return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
+        return handleExceptionInternal(ex, "lol, idk what happened: " + ex.getMessage(), new HttpHeaders(), HttpStatus.I_AM_A_TEAPOT, request);
     }
 }
