@@ -26,10 +26,10 @@ import random
 from random import randint
 import numpy as np
 
-if ray.is_initialized:
-    ray.shutdown()
-ray.init(logging_level=logging.ERROR)
-# ray.init(address='auto', ignore_reinit_error=True, logging_level=logging.ERROR)
+# if ray.is_initialized:
+#     ray.shutdown()
+# ray.init(logging_level=logging.ERROR)
+ray.init(address='auto', ignore_reinit_error=True, logging_level=logging.ERROR)
 
 # Remote class as a stateful actor pattern
 #
@@ -55,7 +55,7 @@ class MethodStateCounter:
         # update times invoked
         self.invokers[name] += 1
         # return the state of that invoker
-        return self.invokers[name]
+        return random.randint(5, 25)
 
     def get_invoker_state(self, name):
         # return the state of the named invoker
@@ -301,10 +301,3 @@ while True:
 #   b) - Get a list of values computed by invoker name
 #   c) - Get state of all invokers
 # 3.2 Modify method invoke to return a random int value between [5, 25]
-
-# 3.3 Take a look on implement parralel Pi computation
-# based on https://docs.ray.io/en/master/ray-core/examples/highly_parallel.html
-#
-# Implement calculating pi as a combination of actor (which keeps the
-# state of the progress of calculating pi as it approaches its final value)
-# and a task (which computes candidates for pi)
