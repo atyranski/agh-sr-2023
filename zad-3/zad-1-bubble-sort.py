@@ -1,3 +1,5 @@
+# Exercise 1.1) Try using local bubble sort and remote bubble sort, show difference
+
 import logging
 import random
 
@@ -5,9 +7,6 @@ import numpy as np
 import ray
 import cProfile
 
-if ray.is_initialized:
-    ray.shutdown()
-ray.init(logging_level=logging.ERROR)
 
 def local_bubble_sort(array: np.array):
     result = np.array(array, copy=True)
@@ -20,6 +19,7 @@ def local_bubble_sort(array: np.array):
                 result[j + 1] = temp
 
     return result
+
 
 @ray.remote
 def remote_bubble_sort(array: np.array):
@@ -34,20 +34,16 @@ def remote_bubble_sort(array: np.array):
 
     return result
 
-# array_1 = np.array([random.randrange(1, 99, 1) for i in range(5)])
-# print(array_1)
-# array_1_result = local_bubble_sort(array_1)
-# print(array_1_result)
 
-original = np.array([random.randrange(1, 99, 1) for i in range(50_000)])
-print(original)
+if __name__ == '__main__':
+    if ray.is_initialized:
+        ray.shutdown()
+    ray.init(logging_level=logging.ERROR)
 
-# local_result = local_bubble_sort(original)
-# print("Local:", local_result)
-cProfile.run("local_bubble_sort(original)")
+    original = np.array([random.randrange(1, 99, 1) for i in range(25_000)])
+    print("Original array:", original)
 
-# remote_result = ray.get(remote_bubble_sort.remote(original))
-# print("Remote:", remote_result)
-cProfile.run("ray.get(remote_bubble_sort.remote(original))")
+    cProfile.run("local_bubble_sort(original)")
+    cProfile.run("ray.get(remote_bubble_sort.remote(original))")
 
-ray.shutdown()
+    ray.shutdown()

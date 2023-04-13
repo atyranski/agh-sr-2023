@@ -188,6 +188,3 @@ print('remote run')
 cProfile.run("run_remote(100000)")
 
 ray.shutdown()
-
-# Excercises 1.1)Try using local bubble sort and remote bubble sort,
-# show difference

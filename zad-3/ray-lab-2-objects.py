@@ -60,6 +60,7 @@ print(val)
 results = ray.get([ray.put(i) for i in range(10)])
 print(results)
 
+
 # Passing Objects by Reference
 
 # Ray object references can be freely passed around a Ray application. This means
@@ -71,6 +72,7 @@ print(results)
 @ray.remote
 def echo(x):
     print(f"current value of argument x: {x}")
+
 
 # Define some variables
 x = list(range(10))
@@ -84,8 +86,8 @@ y = 25
 # send y as value argument
 echo.remote(y)
 
-# send a an object reference
-# note that the echo function deferences it
+# send a object reference
+# note that the echo function deference's it
 echo.remote(obj_ref_x)
 
 # Pass-by-reference
@@ -103,43 +105,41 @@ obj_ref_x = ray.put(x)
 # Echo will not automaticall de-reference it
 echo.remote({"obj": obj_ref_x})
 
-echo.remote([obj_ref_x])
+echo.remote([1, obj_ref_x])
 
-# What about long running tasks?
+# What about long-running tasks?
 
-# Sometimes, you may have tasks that are long running, past their expected
+# Sometimes, you may have tasks that are long-running, past their expected
 # times due to some problem, maybe blocked on accessing a variable in the
 # object store. How do you exit or terminate it? Use a timeout!
 #
-# Now let's set a timeout to return early from an attempted access of a remote
+# Now let's set a timeout to return early from attempted access of a remote
 # object that is blocking for too long...
 
 import time
 
+
 @ray.remote
-def long_running_function ():
+def long_running_function():
     time.sleep(10)
     return 42
+
 
 # You can control how long you want to wait for the task to finish
 
 def time_out_funtion():
     from ray.exceptions import GetTimeoutError
-    obj_ref=long_running_function.remote( )
-    try :
-        ray.get(obj_ref,timeout=6)
-    except GetTimeoutError :
+    obj_ref = long_running_function.remote()
+    try:
+        ray.get(obj_ref, timeout=6)
+    except GetTimeoutError:
         print("`get` timed out")
 
+
 import cProfile
+
 print('start task')
 cProfile.run("time_out_funtion()")
-
-
-
-
-
-
 
 ray.shutdown()
 
