@@ -13,11 +13,11 @@ def process_data(numbers_list: array, numbers_dict: dict):
 
 
 if __name__ == '__main__':
-    if ray.is_initialized:
-        ray.shutdown()
-    ray.init(logging_level=logging.ERROR)
+    # if ray.is_initialized:
+    #     ray.shutdown()
+    # ray.init(logging_level=logging.ERROR)
 
-    size = 1_000_000
+    size = 100_000
     large_list = [random.randrange(1, 99, 1) for i in range(size)]
     large_dict = {i: i % 2 for i in range(size)}
 
@@ -28,4 +28,4 @@ if __name__ == '__main__':
 
     cProfile.run("ray.get(process_data.remote(large_list_ref, large_dict_ref))")
 
-    ray.shutdown()
+    # ray.shutdown()

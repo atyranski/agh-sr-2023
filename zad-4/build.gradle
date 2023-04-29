@@ -1,0 +1,23 @@
+plugins {
+    id 'java'
+    id 'com.zeroc.gradle.ice-builder.slice' version '1.4.7' apply false
+}
+
+group 'edu.agh.atyranski'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // https://mvnrepository.com/artifact/org.projectlombok/lombok
+    compileOnly 'org.projectlombok:lombok:1.18.26'
+    annotationProcessor 'org.projectlombok:lombok:1.18.26'
+
+    implementation 'com.zeroc:ice:3.7.8'
+}
+
+test {
+    useJUnitPlatform()
+}

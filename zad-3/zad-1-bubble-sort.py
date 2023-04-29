@@ -36,14 +36,14 @@ def remote_bubble_sort(array: np.array):
 
 
 if __name__ == '__main__':
-    if ray.is_initialized:
-        ray.shutdown()
-    ray.init(logging_level=logging.ERROR)
+    # if ray.is_initialized:
+    #     ray.shutdown()
+    # context = ray.init(logging_level=logging.ERROR)
 
-    original = np.array([random.randrange(1, 99, 1) for i in range(25_000)])
+    original = np.array([random.randrange(1, 99, 1) for i in range(5000)])
     print("Original array:", original)
 
     cProfile.run("local_bubble_sort(original)")
     cProfile.run("ray.get(remote_bubble_sort.remote(original))")
 
-    ray.shutdown()
+    # ray.shutdown()

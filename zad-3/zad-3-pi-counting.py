@@ -56,13 +56,13 @@ def estimate_pi_value(sample_count: int, workers_amount: int):
 
 
 if __name__ == '__main__':
-    if ray.is_initialized:
-        ray.shutdown()
-    ray.init(logging_level=logging.ERROR)
+    # if ray.is_initialized:
+    #     ray.shutdown()
+    # ray.init(logging_level=logging.ERROR)
 
     sample_count = 1_000_000
     workers_amount = 100
 
     cProfile.run("print(estimate_pi_value(sample_count, workers_amount))")
 
-    ray.shutdown()
+    # ray.shutdown()
