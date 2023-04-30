@@ -1,18 +1,18 @@
-package edu.agh.atyranski.server;
+package edu.agh.atyranski;
 
 import com.zeroc.Ice.Communicator;
+import com.zeroc.Ice.Object;
 import com.zeroc.Ice.ObjectAdapter;
 import com.zeroc.Ice.Util;
-import com.zeroc.Ice.Object;
 import edu.agh.atyranski.config.SmartHomeConfiguration;
 
 import java.util.List;
 
-public class Server {
+public class ServerApplication {
 
     private final String[] args;
 
-    private Server(String[] args) {
+    private ServerApplication(String[] args) {
         this.args = args;
     }
 
@@ -30,7 +30,7 @@ public class Server {
     }
 
     public static void main(String[] args) {
-        Server server = new Server(args);
+        ServerApplication server = new ServerApplication(args);
         server.start();
     }
 }

@@ -1,4 +1,4 @@
-package edu.agh.atyranski.client;
+package edu.agh.atyranski;
 
 import SmartHome.EspressoCoffeeMachinePrx;
 import SmartHome.FilterCoffeeMachinePrx;
@@ -18,13 +18,13 @@ import edu.agh.atyranski.config.SmartHomeConfiguration;
 import java.util.Map;
 import java.util.Scanner;
 
-public class Client {
+public class ClientApplication {
 
     private final String[] args;
 
     private Map<String, Device> devices;
 
-    public Client(String[] args) {
+    public ClientApplication(String[] args) {
         this.args = args;
     }
 
@@ -208,7 +208,7 @@ public class Client {
 
 
     public static void main(String[] args) {
-        final Client client = new Client(args);
+        final ClientApplication client = new ClientApplication(args);
         client.start();
     }
 }
