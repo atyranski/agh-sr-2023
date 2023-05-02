@@ -42,3 +42,7 @@ typings/
 
 # Yarn Integrity file
 .yarn-integrity
+
+### MAVEN ###
+/target
+**/target
