@@ -24,13 +24,6 @@ public class SmartHomeConfiguration {
 
     public final static int PORT = 10000;
 
-//    public static final Map<String, Class<? extends ObjectPrx>> DEFAULT_DEVICES = new HashMap<>() {{
-//        put("ConferenceRoom-RollerBlinds", RollerBlindsPrx.class);
-//        put("Kitchen-EspressoCoffeeMachine", EspressoCoffeeMachinePrx.class);
-//        put("BossRoom-FilterCoffeeMachine", FilterCoffeeMachinePrx.class);
-//        put("Corridor-Thermometer", ThermometerPrx.class);
-//    }};
-
     public static final List<DeviceConfiguration> DEFAULT_DEVICES = List.of(
             DeviceConfiguration.builder()
                     .id("1")
@@ -82,10 +75,11 @@ public class SmartHomeConfiguration {
         return ThermometerPrx.checkedCast(objectProxy);
     }
 
-    public static Map<String, Device> createDevicesProxiesMap(Communicator communicator,
-                                                          List<DeviceConfiguration> configurations,
-                                                          int port) {
-//        final Map<String, ObjectPrx> devicesMap = new HashMap<>();
+    public static Map<String, Device> createDevicesProxiesMap(
+            Communicator communicator,
+            List<DeviceConfiguration> configurations,
+            int port) {
+
         final Map<String, Device> devicesMap = new HashMap<>();
 
         for (DeviceConfiguration configuration: configurations) {
@@ -129,7 +123,10 @@ public class SmartHomeConfiguration {
         return devicesMap;
     }
 
-    public static List<Object> createDevicesServants(List<DeviceConfiguration> deviceConfigurations, ObjectAdapter adapter) {
+    public static List<Object> createDevicesServants(
+            List<DeviceConfiguration> deviceConfigurations,
+            ObjectAdapter adapter) {
+
         final List<Object> servants = new LinkedList<>();
 
         for (DeviceConfiguration configuration: deviceConfigurations) {

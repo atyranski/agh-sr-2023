@@ -25,6 +25,8 @@ public class ServerApplication {
             List<Object> servants = SmartHomeConfiguration.createDevicesServants(SmartHomeConfiguration.DEFAULT_DEVICES, adapter);
 
             adapter.activate();
+
+            System.out.println("Server started");
             communicator.waitForShutdown();
         }
     }

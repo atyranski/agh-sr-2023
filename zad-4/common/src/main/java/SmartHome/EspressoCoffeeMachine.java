@@ -17,9 +17,9 @@ package SmartHome;
 
 public interface EspressoCoffeeMachine extends CoffeeMachine
 {
-    boolean prepareLatte(com.zeroc.Ice.Current current);
+    BrewResult prepareLatte(com.zeroc.Ice.Current current);
 
-    boolean prepareEspresso(com.zeroc.Ice.Current current);
+    BrewResult prepareEspresso(com.zeroc.Ice.Current current);
 
     double getRemainingMilkPercentage(com.zeroc.Ice.Current current);
 
@@ -62,9 +62,9 @@ public interface EspressoCoffeeMachine extends CoffeeMachine
     {
         com.zeroc.Ice.Object._iceCheckMode(null, current.mode);
         inS.readEmptyParams();
-        boolean ret = obj.prepareLatte(current);
+        BrewResult ret = obj.prepareLatte(current);
         com.zeroc.Ice.OutputStream ostr = inS.startWriteParams();
-        ostr.writeBool(ret);
+        BrewResult.ice_write(ostr, ret);
         inS.endWriteParams(ostr);
         return inS.setResult(ostr);
     }
@@ -80,9 +80,9 @@ public interface EspressoCoffeeMachine extends CoffeeMachine
     {
         com.zeroc.Ice.Object._iceCheckMode(null, current.mode);
         inS.readEmptyParams();
-        boolean ret = obj.prepareEspresso(current);
+        BrewResult ret = obj.prepareEspresso(current);
         com.zeroc.Ice.OutputStream ostr = inS.startWriteParams();
-        ostr.writeBool(ret);
+        BrewResult.ice_write(ostr, ret);
         inS.endWriteParams(ostr);
         return inS.setResult(ostr);
     }

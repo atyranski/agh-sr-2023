@@ -1,12 +1,16 @@
 package edu.agh.atyranski.servant;
 
 import SmartHome.Americano;
+import SmartHome.BrewResult;
 import SmartHome.Espresso;
 import SmartHome.EspressoCoffeeMachine;
 import SmartHome.Latte;
 import com.zeroc.Ice.Current;
 
-public class EspressoCoffeeMachineI implements EspressoCoffeeMachine{
+import static edu.agh.atyranski.utils.CustomLogger.printServerError;
+import static edu.agh.atyranski.utils.CustomLogger.printServerLog;
+
+public class EspressoCoffeeMachineI implements EspressoCoffeeMachine {
 
     private static final long serialVersionUID = 1;
 
@@ -44,42 +48,82 @@ public class EspressoCoffeeMachineI implements EspressoCoffeeMachine{
     }
 
     @Override
-    public boolean prepareAmericano(Current current) {
-        if (waterAmount < americano.waterUsage ||
-                beansAmount < americano.beansUsage ||
-                groundsAmount > GROUNDS_CONTAINER_CAPACITY) {
-            return false;
+    public BrewResult prepareAmericano(Current current) {
+        printServerLog(this.getClass(),new Object() {}.getClass().getEnclosingMethod().getName(), "americano requested");
+
+        if (waterAmount < americano.waterUsage) {
+            printServerError(this.getClass(), new Object() {}.getClass().getEnclosingMethod().getName(), "not enough water");
+            return BrewResult.NoWater;
+        }
+
+        if (beansAmount < americano.beansUsage) {
+            printServerError(this.getClass(), new Object() {}.getClass().getEnclosingMethod().getName(), "not enough beans");
+            return BrewResult.NoBeans;
+        }
+
+        if (groundsAmount > GROUNDS_CONTAINER_CAPACITY) {
+            printServerError(this.getClass(), new Object() {}.getClass().getEnclosingMethod().getName(), "grounds container is full");
+            return BrewResult.GroundsFull;
         }
 
         waterAmount -= americano.waterUsage;
         beansAmount -= americano.beansUsage;
         groundsAmount += americano.groundsProduced;
 
-        return true;
+        printServerLog(this.getClass(),new Object() {}.getClass().getEnclosingMethod().getName(), "americano prepared");
+        return BrewResult.Ready;
     }
 
     @Override
-    public boolean prepareEspresso(Current current) {
-        if (waterAmount < espresso.waterUsage ||
-                beansAmount < espresso.beansUsage ||
-                groundsAmount > GROUNDS_CONTAINER_CAPACITY) {
-            return false;
+    public BrewResult prepareEspresso(Current current) {
+        printServerLog(this.getClass(), new Object() {}.getClass().getEnclosingMethod().getName(), "espresso requested");
+
+        if (waterAmount < espresso.waterUsage) {
+            printServerError(this.getClass(), new Object() {}.getClass().getEnclosingMethod().getName(), "not enough water");
+            return BrewResult.NoWater;
+        }
+
+        if (beansAmount < espresso.beansUsage) {
+            printServerError(this.getClass(), new Object() {}.getClass().getEnclosingMethod().getName(), "not enough beans");
+            return BrewResult.NoBeans;
+        }
+
+        if (groundsAmount > GROUNDS_CONTAINER_CAPACITY) {
+            printServerError(this.getClass(), new Object() {}.getClass().getEnclosingMethod().getName(), "grounds container is full");
+            return BrewResult.GroundsFull;
         }
 
         waterAmount -= espresso.waterUsage;
         beansAmount -= espresso.beansUsage;
         groundsAmount += espresso.groundsProduced;
 
-        return true;
+        printServerLog(this.getClass(),new Object() {}.getClass().getEnclosingMethod().getName(), "espresso prepared");
+
+        return BrewResult.Ready;
     }
 
     @Override
-    public boolean prepareLatte(Current current) {
-        if (waterAmount < latte.waterUsage ||
-                beansAmount < latte.beansUsage ||
-                milkAmount < latte.milkUsage ||
-                groundsAmount > GROUNDS_CONTAINER_CAPACITY) {
-            return false;
+    public BrewResult prepareLatte(Current current) {
+        printServerLog(this.getClass(), new Object() {}.getClass().getEnclosingMethod().getName(), "latte requested");
+
+        if (waterAmount < latte.waterUsage) {
+            printServerError(this.getClass(), new Object() {}.getClass().getEnclosingMethod().getName(), "not enough water");
+            return BrewResult.NoWater;
+        }
+
+        if (beansAmount < latte.beansUsage) {
+            printServerError(this.getClass(), new Object() {}.getClass().getEnclosingMethod().getName(), "not enough beans");
+            return BrewResult.NoBeans;
+        }
+
+        if (milkAmount < latte.milkUsage) {
+            printServerError(this.getClass(), new Object() {}.getClass().getEnclosingMethod().getName(), "not enough milk");
+            return BrewResult.NoMilk;
+        }
+
+        if (groundsAmount > GROUNDS_CONTAINER_CAPACITY) {
+            printServerError(this.getClass(), new Object() {}.getClass().getEnclosingMethod().getName(), "grounds container is full");
+            return BrewResult.GroundsFull;
         }
 
         waterAmount -= latte.waterUsage;
@@ -87,47 +131,58 @@ public class EspressoCoffeeMachineI implements EspressoCoffeeMachine{
         milkAmount -= latte.milkUsage;
         groundsAmount += latte.groundsProduced;
 
-        return true;
+        printServerLog(this.getClass(),new Object() {}.getClass().getEnclosingMethod().getName(), "latte prepared");
+
+        return BrewResult.Ready;
     }
 
     @Override
     public double getRemainingBeansPercentage(Current current) {
+        printServerLog(this.getClass(), new Object() {}.getClass().getEnclosingMethod().getName(), " checked remaining coffee beans percentage");
         return (double) beansAmount / BEANS_CAPACITY;
     }
 
     @Override
     public double getRemainingWaterPercentage(Current current) {
+        printServerLog(this.getClass(), new Object() {}.getClass().getEnclosingMethod().getName(), "checked remaining water percentage");
         return (double) waterAmount / WATER_CAPACITY;
     }
 
     @Override
+    public double getRemainingMilkPercentage(Current current) {
+        printServerLog(this.getClass(), new Object() {}.getClass().getEnclosingMethod().getName(), "checked remaining milk percentage");
+        return (double) milkAmount / MILK_CAPACITY;
+    }
+
+
+    @Override
     public double getGroundsContainerFillPercentage(Current current) {
+        printServerLog(this.getClass(), new Object() {}.getClass().getEnclosingMethod().getName(), "checked grounds container fill percentage");
         return (double) groundsAmount / GROUNDS_CONTAINER_CAPACITY;
     }
 
     @Override
-    public double getRemainingMilkPercentage(Current current) {
-        return (double) milkAmount / MILK_CAPACITY;
-    }
-
-    @Override
     public void refillBeans(Current current) {
+        printServerLog(this.getClass(), new Object() {}.getClass().getEnclosingMethod().getName(), "coffee beans has been refilled");
         beansAmount = BEANS_CAPACITY;
     }
 
     @Override
     public void refillWater(Current current) {
+        printServerLog(this.getClass(), new Object() {}.getClass().getEnclosingMethod().getName(), "water has been refilled");
         waterAmount = WATER_CAPACITY;
     }
 
 
     @Override
     public void refillMilk(Current current) {
+        printServerLog(this.getClass(), new Object() {}.getClass().getEnclosingMethod().getName(), "filters has been refilled");
         milkAmount = MILK_CAPACITY;
     }
 
     @Override
     public void emptyGroundsContainer(Current current) {
+        printServerLog(this.getClass(), new Object() {}.getClass().getEnclosingMethod().getName(), "grounds container has been emptied");
         groundsAmount = 0;
     }
 }

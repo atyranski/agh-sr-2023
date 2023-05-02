@@ -3,7 +3,7 @@ package edu.agh.atyranski.servant;
 import SmartHome.RollerBlinds;
 import com.zeroc.Ice.Current;
 
-import java.util.Scanner;
+import static edu.agh.atyranski.utils.CustomLogger.printServerLog;
 
 public class RollerBlindsI implements RollerBlinds {
 
@@ -13,16 +13,19 @@ public class RollerBlindsI implements RollerBlinds {
 
     @Override
     public void raiseBlinds(Current current) {
+        printServerLog(this.getClass(), new Object() {}.getClass().getEnclosingMethod().getName(), "blinds has been raised");
         isRaised = true;
     }
 
     @Override
     public void lowerBlinds(Current current) {
+        printServerLog(this.getClass(), new Object() {}.getClass().getEnclosingMethod().getName(), "blinds has been lowered");
         isRaised = false;
     }
 
     @Override
     public boolean isRaised(Current current) {
+        printServerLog(this.getClass(), new Object() {}.getClass().getEnclosingMethod().getName(), "checked if blinds are raised");
         return isRaised;
     }
 

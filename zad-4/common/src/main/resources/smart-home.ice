@@ -39,8 +39,10 @@ module SmartHome {
         int groundsProduced = 1;
     };
 
+    enum BrewResult { Ready, NoBeans, NoWater, NoMilk, NoFilters, GroundsFull };
+
     interface CoffeeMachine extends Device  {
-        bool prepareAmericano();
+        BrewResult prepareAmericano();
         double getRemainingBeansPercentage();
         double getRemainingWaterPercentage();
         double getGroundsContainerFillPercentage();
@@ -55,8 +57,8 @@ module SmartHome {
     };
 
     interface EspressoCoffeeMachine extends CoffeeMachine {
-        bool prepareLatte();
-        bool prepareEspresso();
+        BrewResult prepareLatte();
+        BrewResult prepareEspresso();
         double getRemainingMilkPercentage();
         void refillMilk();
     };

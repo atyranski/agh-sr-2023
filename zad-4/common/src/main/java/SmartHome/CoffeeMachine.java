@@ -17,7 +17,7 @@ package SmartHome;
 
 public interface CoffeeMachine extends Device
 {
-    boolean prepareAmericano(com.zeroc.Ice.Current current);
+    BrewResult prepareAmericano(com.zeroc.Ice.Current current);
 
     double getRemainingBeansPercentage(com.zeroc.Ice.Current current);
 
@@ -67,9 +67,9 @@ public interface CoffeeMachine extends Device
     {
         com.zeroc.Ice.Object._iceCheckMode(null, current.mode);
         inS.readEmptyParams();
-        boolean ret = obj.prepareAmericano(current);
+        BrewResult ret = obj.prepareAmericano(current);
         com.zeroc.Ice.OutputStream ostr = inS.startWriteParams();
-        ostr.writeBool(ret);
+        BrewResult.ice_write(ostr, ret);
         inS.endWriteParams(ostr);
         return inS.setResult(ostr);
     }

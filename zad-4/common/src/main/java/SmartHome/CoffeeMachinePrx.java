@@ -17,22 +17,22 @@ package SmartHome;
 
 public interface CoffeeMachinePrx extends DevicePrx
 {
-    default boolean prepareAmericano()
+    default BrewResult prepareAmericano()
     {
         return prepareAmericano(com.zeroc.Ice.ObjectPrx.noExplicitContext);
     }
 
-    default boolean prepareAmericano(java.util.Map<String, String> context)
+    default BrewResult prepareAmericano(java.util.Map<String, String> context)
     {
         return _iceI_prepareAmericanoAsync(context, true).waitForResponse();
     }
 
-    default java.util.concurrent.CompletableFuture<java.lang.Boolean> prepareAmericanoAsync()
+    default java.util.concurrent.CompletableFuture<BrewResult> prepareAmericanoAsync()
     {
         return _iceI_prepareAmericanoAsync(com.zeroc.Ice.ObjectPrx.noExplicitContext, false);
     }
 
-    default java.util.concurrent.CompletableFuture<java.lang.Boolean> prepareAmericanoAsync(java.util.Map<String, String> context)
+    default java.util.concurrent.CompletableFuture<BrewResult> prepareAmericanoAsync(java.util.Map<String, String> context)
     {
         return _iceI_prepareAmericanoAsync(context, false);
     }
@@ -43,12 +43,12 @@ public interface CoffeeMachinePrx extends DevicePrx
      * @param sync -
      * @return -
      **/
-    default com.zeroc.IceInternal.OutgoingAsync<java.lang.Boolean> _iceI_prepareAmericanoAsync(java.util.Map<String, String> context, boolean sync)
+    default com.zeroc.IceInternal.OutgoingAsync<BrewResult> _iceI_prepareAmericanoAsync(java.util.Map<String, String> context, boolean sync)
     {
-        com.zeroc.IceInternal.OutgoingAsync<java.lang.Boolean> f = new com.zeroc.IceInternal.OutgoingAsync<>(this, "prepareAmericano", null, sync, null);
+        com.zeroc.IceInternal.OutgoingAsync<BrewResult> f = new com.zeroc.IceInternal.OutgoingAsync<>(this, "prepareAmericano", null, sync, null);
         f.invoke(true, context, null, null, istr -> {
-                     boolean ret;
-                     ret = istr.readBool();
+                     BrewResult ret;
+                     ret = BrewResult.ice_read(istr);
                      return ret;
                  });
         return f;
