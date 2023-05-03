@@ -17,6 +17,9 @@
         <grpc.version>1.23.0</grpc.version>
         <slf4j.version>2.0.7</slf4j.version>
         <lombok.version>1.18.26</lombok.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencies>

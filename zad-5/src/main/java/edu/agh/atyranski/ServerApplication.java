@@ -17,9 +17,9 @@ public class ServerApplication {
             System.out.println("Server started");
             server.awaitTermination();
 
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             System.out.println(e.getMessage());
-        } catch (InterruptedException e) {
+        } finally {
             System.out.println("Server stopped");
         }
     }

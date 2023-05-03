@@ -25,7 +25,6 @@ public class DynamicExecutionService extends ExecutionServiceGrpc.ExecutionServi
 
         System.out.println(request);
 
-
         final String[] methodParts = request.getMethod().split(":");
         final String methodName = methodParts[1];
 
@@ -43,7 +42,6 @@ public class DynamicExecutionService extends ExecutionServiceGrpc.ExecutionServi
             boolean methodFound = false;
 
             for (Method m: methods) {
-                System.out.println("> " + m.getName());
                 if (m.getName().equals(methodName)) {
                     methodFound = true;
                     Class<?>[] parameterTypes = m.getParameterTypes();

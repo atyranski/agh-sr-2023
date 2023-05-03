@@ -1,2 +1,10 @@
+edu\agh\atyranski\examples\models\Token$TokenBuilder.class
+edu\agh\atyranski\examples\models\Credentials$AccountType.class
+edu\agh\atyranski\examples\models\AdditionAddends.class
+edu\agh\atyranski\examples\models\Credentials$APIKeyPair$APIKeyPairBuilder.class
+edu\agh\atyranski\examples\models\Credentials.class
 edu\agh\atyranski\examples\Example.class
-edu\agh\atyranski\examples\Example$AdditionAddends.class
+edu\agh\atyranski\examples\models\Credentials$CredentialsBuilder.class
+edu\agh\atyranski\examples\models\AdditionAddends$AdditionAddendsBuilder.class
+edu\agh\atyranski\examples\models\Token.class
+edu\agh\atyranski\examples\models\Credentials$APIKeyPair.class

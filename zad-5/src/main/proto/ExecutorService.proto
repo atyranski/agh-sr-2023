@@ -3,18 +3,13 @@ package edu.agh.atyranski.Executors.grpc;
 option java_multiple_files = true;
 
 message ExecutionRequest {
-  // Fully qualified class name:method name
-  // For example io.mark.java_examples.Executables.RunThisCode:addPerson
   string method = 1;
   string jarLocation = 2;
-  // data in JSON
   string data = 3;
 }
 message ExecutionResponse {
-  // data in JSON
   string data = 1;
 }
 service ExecutionService {
-  // Define a RPC operation
   rpc execute(ExecutionRequest) returns (ExecutionResponse);
 }
