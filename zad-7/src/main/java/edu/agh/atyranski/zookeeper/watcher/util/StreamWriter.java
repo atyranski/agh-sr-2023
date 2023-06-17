@@ -1,4 +1,4 @@
-package edu.agh.atyranski.example;
+package edu.agh.atyranski.zookeeper.watcher.util;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -7,7 +7,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 @Slf4j
-class StreamWriter extends Thread {
+public class StreamWriter extends Thread {
     OutputStream outputStream;
 
     InputStream inputStream;
@@ -26,6 +26,7 @@ class StreamWriter extends Thread {
         int reasonCode;
         try {
             while ((reasonCode = inputStream.read(bytes)) > 0) {
+                log.info("reason code: {}", reasonCode);
                 outputStream.write(bytes, 0, reasonCode);
             }
         } catch (IOException e) {
