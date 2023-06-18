@@ -5,7 +5,7 @@ services:
     hostname: zk1
     image: bitnami/zookeeper:3.6.2
     ports:
-      - 21811:2181
+      - 2181:2181
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
       - ZOO_SERVER_ID=1
@@ -14,8 +14,6 @@ services:
     container_name: zk2
     hostname: zk2
     image: bitnami/zookeeper:3.6.2
-    ports:
-      - 21812:2181
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
       - ZOO_SERVER_ID=2
@@ -24,8 +22,6 @@ services:
     container_name: zk3
     hostname: zk3
     image: bitnami/zookeeper:3.6.2
-    ports:
-      - 21813:2181
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
       - ZOO_SERVER_ID=3
