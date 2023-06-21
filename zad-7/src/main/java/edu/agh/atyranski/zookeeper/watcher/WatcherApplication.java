@@ -94,7 +94,7 @@ public class WatcherApplication implements Watcher, Runnable, DataMonitorListene
 
     public static void main(String[] args) {
         final String hostAddress = "localhost:21811";
-        final String ZNodeName = "/test";
+        final String ZNodeName = "/z";
 
         try {
             new WatcherApplication(hostAddress, ZNodeName).run();
